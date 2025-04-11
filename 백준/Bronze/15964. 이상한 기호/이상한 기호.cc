@@ -2,7 +2,7 @@
 
 using namespace std;
 
-int calc(unsigned a, unsigned b){
+long calc(long a, long b){
 
     return (a+b) * (a-b);
 
@@ -10,8 +10,8 @@ int calc(unsigned a, unsigned b){
 
 int main(){
 
-    unsigned a, b;
-    int result;
+    long a, b;
+    long result;
 
     cin >> a >> b;
     result = calc(a, b);
