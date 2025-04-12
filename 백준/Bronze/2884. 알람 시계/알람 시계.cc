@@ -1,5 +1,4 @@
 #include <iostream>
-#include <math.h>
 
 using namespace std;
 
@@ -12,7 +11,7 @@ int main(){
 
     
     if(minute - 45 < 0){
-        minute = abs(60 + (minute - 45));
+        minute = 60 + (minute - 45);
         
         if (hour == 0){
             hour = 23;
