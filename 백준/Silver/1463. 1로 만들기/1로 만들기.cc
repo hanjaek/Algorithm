@@ -16,14 +16,14 @@ int main(){
     for(int i=2; i <= N; i++){
 
         if(i % 6 == 0){
-            int min_dp = min(min(DP[i/3], DP[i/2]), DP[i-1]);
-            DP[i] = min_dp + 1;
+            int min_dp = min(min(DP[i/3] + 1, DP[i/2] + 1), DP[i-1] + 1);
+            DP[i] = min_dp;
         }
         else if(i % 3 == 0){
-            DP[i] = min(DP[i/3], DP[i-1]) + 1;
+            DP[i] = min(DP[i/3] + 1, DP[i-1] + 1);
         }
         else if(i % 2 ==0){
-            DP[i] = min(DP[i/2], DP[i-1]) + 1;
+            DP[i] = min(DP[i/2] + 1, DP[i-1] + 1);
         }
         else{
             DP[i] = DP[i-1] + 1;
