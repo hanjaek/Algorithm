@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -22,17 +23,26 @@ void input(){
     }
 }
 
-void dfs(int x, int y, char color){
+void bfs(int x, int y){
+    queue<pair<int, int>> q;
+    q.push({x, y});
     visited[y][x] = true;
-    int idx = 0;
+    char color = grid[y][x];
 
-    for(int dir=0; dir < 4; dir++){
-        int nx = x + dx[dir];
-        int ny = y + dy[dir];
+    while(!q.empty()){
+        int cx = q.front().first;
+        int cy = q.front().second;
+        q.pop();
 
-        if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
-        if(!visited[ny][nx] && grid[ny][nx] == color){
-            dfs(nx, ny, color);
+        for(int dir=0; dir < 4; dir++){
+            int nx = cx + dx[dir];
+            int ny = cy + dy[dir];
+
+            if(nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+            if(!visited[ny][nx] && grid[ny][nx] == color){
+                visited[ny][nx] = true;
+                q.push({nx, ny});
+            }
         }
     }
 }
@@ -44,23 +54,22 @@ void func(){
     for(int y=0; y < N; y++){
         for(int x=0; x < N; x++){
             if(!visited[y][x]){
-                dfs(x, y, grid[y][x]);
+                bfs(x, y);
                 ordinary++;
             }
         }
     }
 
     visited.assign(N, vector<bool>(N, false));
-
     for(int y=0; y < N; y++){
         for(int x=0; x < N; x++){
-            if(grid[y][x] == 'G') grid[y][x] = 'R';        }
+            if(grid[y][x] == 'G') grid[y][x]='R';
+        }
     }
-
     for(int y=0; y < N; y++){
         for(int x=0; x < N; x++){
             if(!visited[y][x]){
-                dfs(x, y, grid[y][x]);
+                bfs(x, y);
                 weakness++;
             }
         }
