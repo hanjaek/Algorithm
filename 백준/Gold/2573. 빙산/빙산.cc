@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 
 using namespace std;
 
@@ -24,23 +23,16 @@ void input(){
     }
 }
 
-void bfs(int x, int y){
-    queue<pair<int, int>> q;
-    q.push({x, y});
+void dfs(int x, int y){
     visited[y][x] = true;
 
-    while(!q.empty()){
-        auto [cx, cy] = q.front(); q.pop();
+    for(int dir=0; dir < 4; dir++){
+        int nx = x + dx[dir];
+        int ny = y + dy[dir];
 
-        for(int dir=0; dir < 4; dir++){
-            int nx = cx + dx[dir];
-            int ny = cy + dy[dir];
-
-            if(nx < 0 || ny < 0 || nx >= M || ny >= N) continue;
-            if(!visited[ny][nx] && grid[ny][nx] != 0){
-                q.push({nx, ny});
-                visited[ny][nx] = true;
-            }
+        if(nx < 0 || ny < 0 || nx >= M || ny >= N) continue;
+        if(!visited[ny][nx] && grid[ny][nx] != 0){
+            dfs(nx, ny);
         }
     }
 }
@@ -55,11 +47,12 @@ void func(){
         for(int y=1; y < N-1; y++){
             for(int x=1; x < M-1; x++){
                 if(!visited[y][x] && grid[y][x] != 0){
-                    bfs(x, y);
+                    dfs(x, y);
                     land++;
                 }
             }
         }
+
         if(land >= 2){
             cout << years;
             return;
@@ -70,15 +63,15 @@ void func(){
         }
 
         melt.assign(N, vector<int>(M, 0));
-
         for(int y=1; y < N-1; y++){
             for(int x=1; x < M-1; x++){
                 if(grid[y][x] == 0) continue;
                 int cnt = 0;
-                
+
                 for(int dir=0; dir < 4; dir++){
                     int nx = x + dx[dir];
                     int ny = y + dy[dir];
+
                     if(nx < 0 || ny < 0 || nx >= M || ny >= N) continue;
                     if(grid[ny][nx] == 0) cnt++;
                 }
@@ -87,8 +80,8 @@ void func(){
         }
 
         for(int y=1; y < N-1; y++){
-            for(int x=0; x < M-1; x++){
-                if(grid[y][x] > 0){
+            for(int x=1; x < M-1; x++){
+                if(grid[y][x] != 0){
                     grid[y][x] -= melt[y][x];
                     if(grid[y][x] < 0){
                         grid[y][x] = 0;
