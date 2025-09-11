@@ -4,7 +4,7 @@
 using namespace std;
 
 int n;
-vector<int> fib;
+vector<long long> fib;
 
 void input(){
     cin >> n;
