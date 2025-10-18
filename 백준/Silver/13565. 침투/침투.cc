@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -21,26 +21,27 @@ void input(){
     }
 }
 
-bool bfs(){
-    queue<pair<int, int>> q;
-    
+bool dfs(){
+    stack<pair<int, int>> st;
+
     for(int x=0; x < N; x++){
         if(grid[0][x] == '0'){
-            q.push({x, 0});
+            st.push({x, 0});
             visited[0][x] = true;
         }
     }
 
-    while(!q.empty()){
-        auto [cx, cy] = q.front(); q.pop();
+    while(!st.empty()){
+        auto [cx, cy] = st.top(); st.pop();
         if(cy == M-1) return true;
 
         for(int d=0; d < 4; d++){
             int nx = cx + dx[d];
             int ny = cy + dy[d];
+
             if(nx < 0 || ny < 0 || nx >= N || ny >= M) continue;
             if(grid[ny][nx] == '0' && !visited[ny][nx]){
-                q.push({nx, ny});
+                st.push({nx, ny});
                 visited[ny][nx] = true;
             }
         }
@@ -49,7 +50,7 @@ bool bfs(){
 }
 
 void func(){
-    cout << (bfs() ? "YES" : "NO") << "\n";
+    cout << (dfs() ? "YES" : "NO") << "\n";
 }
 
 int main(){
