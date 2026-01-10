@@ -13,12 +13,11 @@ vector<vector<int>> grid;
 int dx[4] = {1, -1, 0, 0};
 int dy[4] = {0, 0, -1, 1};
 
-// 모든 테스트 케이스는 통과 하지만, 실패
-// void swap(int &a, int &b){
-//     int temp = a;
-//     a = b;
-//     b = temp;
-// }
+void swap(int &a, int &b){
+    int temp = a;
+    a = b;
+    b = temp;
+}
 
 void input(){
     cin >> N >> M >> sx >> sy >> K;
