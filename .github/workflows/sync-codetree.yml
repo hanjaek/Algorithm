@@ -12,19 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Algorithm repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - run: |
+      - name: Set Git config
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - run: |
-          git remote get-url codetree || git remote add codetree https://github.com/hanjaek/Codetree.git
-          git fetch codetree
+      - name: Add/Update codetree remote (supports private)
+        run: |
+          # 기존 remote가 있으면 토큰 URL로 강제 갱신
+          if git remote get-url codetree > /dev/null 2>&1; then
+            git remote set-url codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
+          else
+            git remote add codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
+          fi
+          git fetch codetree main
 
-      - run: |
+      - name: Pull codetree subtree (squash)
+        run: |
           git subtree pull --prefix=Codetree codetree main --squash -m "auto sync Codetree" || echo "No changes"
 
-      - run: git push origin HEAD:main || echo "Nothing to push"
+      - name: Push updates to Algorithm
+        run: |
+          git push origin HEAD:main || echo "Nothing to push"
