@@ -24,9 +24,14 @@ jobs:
 
       - name: Force set codetree remote (private supported)
         run: |
+          set -e
+          echo "Secret length: ${#CODETREE_FETCH_TOKEN}"
           git remote remove codetree 2>/dev/null || true
-          git remote add codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
+          git remote add codetree https://x-access-token:${CODETREE_FETCH_TOKEN}@github.com/hanjaek/Codetree.git
+          git remote -v
           git fetch codetree main
+        env:
+          CODETREE_FETCH_TOKEN: ${{ secrets.CODETREE_FETCH_TOKEN }}
 
       - name: Pull codetree subtree
         run: |
