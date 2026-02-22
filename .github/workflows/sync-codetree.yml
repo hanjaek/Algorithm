@@ -1,0 +1,30 @@
+name: Sync Codetree Subtree
+
+on:
+  repository_dispatch:
+    types: [sync-codetree]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - run: |
+          git remote get-url codetree || git remote add codetree https://github.com/hanjaek/Codetree.git
+          git fetch codetree
+
+      - run: |
+          git subtree pull --prefix=Codetree codetree main --squash -m "auto sync Codetree" || echo "No changes"
+
+      - run: git push origin HEAD:main || echo "Nothing to push"
