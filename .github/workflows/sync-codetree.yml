@@ -22,14 +22,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add/Update codetree remote (supports private)
+      - name: Force set codetree remote (private supported)
         run: |
-          # 기존 remote가 있으면 토큰 URL로 강제 갱신
-          if git remote get-url codetree > /dev/null 2>&1; then
-            git remote set-url codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
-          else
-            git remote add codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
-          fi
+          # 항상 깨끗하게: 기존 remote 있으면 삭제하고 토큰 URL로 다시 추가
+          git remote remove codetree 2>/dev/null || true
+          git remote add codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
+
+          # 연결 확인용 (문제 생기면 여기서 바로 터짐)
           git fetch codetree main
 
       - name: Pull codetree subtree (squash)
