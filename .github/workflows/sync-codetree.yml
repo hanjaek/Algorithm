@@ -3,6 +3,7 @@ name: Sync Codetree Subtree
 on:
   repository_dispatch:
     types: [sync-codetree]
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -22,21 +23,54 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Force set codetree remote (private supported)
-        run: |
-          set -e
-          echo "Secret length: ${#CODETREE_FETCH_TOKEN}"
-          git remote remove codetree 2>/dev/null || true
-          git remote add codetree https://x-access-token:${CODETREE_FETCH_TOKEN}@github.com/hanjaek/Codetree.git
-          git remote -v
-          git fetch codetree main
+      - name: Verify secret exists (masked)
+        shell: bash
         env:
           CODETREE_FETCH_TOKEN: ${{ secrets.CODETREE_FETCH_TOKEN }}
-
-      - name: Pull codetree subtree
         run: |
+          set -e
+          if [ -z "${CODETREE_FETCH_TOKEN}" ]; then
+            echo "❌ CODETREE_FETCH_TOKEN is empty. Check Algorithm repo secrets."
+            exit 1
+          fi
+          echo "✅ CODETREE_FETCH_TOKEN is set (length=${#CODETREE_FETCH_TOKEN})"
+
+      - name: Force set codetree remote (private supported) and fetch
+        shell: bash
+        env:
+          CODETREE_FETCH_TOKEN: ${{ secrets.CODETREE_FETCH_TOKEN }}
+        run: |
+          set -e
+
+          # remote 깨끗하게
+          git remote remove codetree 2>/dev/null || true
+
+          # private repo 접근용 토큰 URL로 remote 설정
+          git remote add codetree "https://x-access-token:${CODETREE_FETCH_TOKEN}@github.com/hanjaek/Codetree.git"
+
+          echo "✅ Remotes:"
+          git remote -v
+
+          echo "✅ Fetching codetree/main..."
+          git fetch codetree main
+
+          echo "✅ codetree/main fetched."
+
+      - name: Pull codetree subtree (squash)
+        shell: bash
+        run: |
+          set -e
+          # 변경 없으면 실패하지 않게 처리
           git subtree pull --prefix=Codetree codetree main --squash -m "auto sync Codetree" || echo "No changes"
 
-      - name: Push to Algorithm
+      - name: Push updates to Algorithm
+        shell: bash
         run: |
-          git push origin HEAD:main || echo "Nothing to push"
+          set -e
+          # 실제 변경이 있을 때만 push되도록(없으면 에러 없이 끝)
+          if git status --porcelain | grep -q .; then
+            echo "✅ Changes exist. Pushing..."
+            git push origin HEAD:main
+          else
+            echo "✅ Nothing to push."
+          fi
