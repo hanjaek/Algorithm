@@ -24,17 +24,14 @@ jobs:
 
       - name: Force set codetree remote (private supported)
         run: |
-          # 항상 깨끗하게: 기존 remote 있으면 삭제하고 토큰 URL로 다시 추가
           git remote remove codetree 2>/dev/null || true
           git remote add codetree https://x-access-token:${{ secrets.CODETREE_FETCH_TOKEN }}@github.com/hanjaek/Codetree.git
-
-          # 연결 확인용 (문제 생기면 여기서 바로 터짐)
           git fetch codetree main
 
-      - name: Pull codetree subtree (squash)
+      - name: Pull codetree subtree
         run: |
           git subtree pull --prefix=Codetree codetree main --squash -m "auto sync Codetree" || echo "No changes"
 
-      - name: Push updates to Algorithm
+      - name: Push to Algorithm
         run: |
           git push origin HEAD:main || echo "Nothing to push"
