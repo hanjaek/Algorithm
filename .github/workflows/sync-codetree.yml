@@ -3,7 +3,7 @@ name: Sync Codetree Subtree
 on:
   repository_dispatch:
     types: [sync-codetree]
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,59 +18,28 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup SSH access
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.CODETREE_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Set Git config
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Verify secret exists (masked)
-        shell: bash
-        env:
-          CODETREE_FETCH_TOKEN: ${{ secrets.CODETREE_FETCH_TOKEN }}
+      - name: Add codetree remote via SSH
         run: |
-          set -e
-          if [ -z "${CODETREE_FETCH_TOKEN}" ]; then
-            echo "❌ CODETREE_FETCH_TOKEN is empty. Check Algorithm repo secrets."
-            exit 1
-          fi
-          echo "✅ CODETREE_FETCH_TOKEN is set (length=${#CODETREE_FETCH_TOKEN})"
-
-      - name: Force set codetree remote (private supported) and fetch
-        shell: bash
-        env:
-          CODETREE_FETCH_TOKEN: ${{ secrets.CODETREE_FETCH_TOKEN }}
-        run: |
-          set -e
-
-          # remote 깨끗하게
           git remote remove codetree 2>/dev/null || true
-
-          # private repo 접근용 토큰 URL로 remote 설정
-          git remote add codetree "https://x-access-token:${CODETREE_FETCH_TOKEN}@github.com/hanjaek/Codetree.git"
-
-          echo "✅ Remotes:"
-          git remote -v
-
-          echo "✅ Fetching codetree/main..."
+          git remote add codetree git@github.com:hanjaek/Codetree.git
           git fetch codetree main
 
-          echo "✅ codetree/main fetched."
-
-      - name: Pull codetree subtree (squash)
-        shell: bash
+      - name: Pull subtree
         run: |
-          set -e
-          # 변경 없으면 실패하지 않게 처리
           git subtree pull --prefix=Codetree codetree main --squash -m "auto sync Codetree" || echo "No changes"
 
-      - name: Push updates to Algorithm
-        shell: bash
+      - name: Push
         run: |
-          set -e
-          # 실제 변경이 있을 때만 push되도록(없으면 에러 없이 끝)
-          if git status --porcelain | grep -q .; then
-            echo "✅ Changes exist. Pushing..."
-            git push origin HEAD:main
-          else
-            echo "✅ Nothing to push."
-          fi
+          git push origin HEAD:main || echo "Nothing to push"
