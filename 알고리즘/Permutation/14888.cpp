@@ -48,7 +48,7 @@ void func(){
             int next = numbers[i+1];
             int op = ops[i];
 
-            calc(val, next, op)
+            calc(val, next, op);
         }
         mx = max(mx, val);
         mn = min(mn, val);
