@@ -14,13 +14,20 @@ void input(){
 
 void func(){
     numbers.clear();
-    
+
     for(int i=1; i <= N; i++){
         numbers.push_back(i);
     }
 
+    // do{
+    //     for(int num : numbers) cout << num << " ";
+    //     cout << endl;
+    // }while(next_permutation(numbers.begin(), numbers.end()));
+
     do{
-        for(int num : numbers) cout << num << " ";
+        for(auto it = numbers.begin(); it != numbers.end(); ++it){
+            cout << *it << " ";
+        }
         cout << endl;
     }while(next_permutation(numbers.begin(), numbers.end()));
 }
