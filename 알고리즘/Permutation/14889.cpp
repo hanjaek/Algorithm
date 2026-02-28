@@ -43,6 +43,8 @@ void func(){
             }
         }
         result = min(result, abs(team_start - team_link));
+        if(result == 0) break;
+        
     }while(next_permutation(mask.begin(), mask.end()));
 
     cout << result << endl;
