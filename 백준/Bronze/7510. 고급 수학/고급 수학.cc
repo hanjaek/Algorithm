@@ -7,12 +7,7 @@ using namespace std;
 int N;
 
 bool check_right_triangle(int a, int b, int c){
-    if((a*a + b*b) ==  c*c){
-        return true;
-    }
-    else{
-        return false;
-    }
+    return ((a*a + b*b == c*c));
 }
 
 void input(){
