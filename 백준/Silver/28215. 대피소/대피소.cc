@@ -5,42 +5,44 @@
 
 using namespace std;
 #define endl "\n"
+#define ll long long
 
 int N, K;
-vector<pair<int, int>> house;
+vector<pair<ll, ll>> house;
 
-int dist(pair<int ,int> a, pair<int, int> b){
+ll dist(pair<ll ,ll> a, pair<ll, ll> b){
     return abs(a.first-b.first) + abs(a.second-b.second);
 }
 
 void input(){
     cin >> N >> K;
-    if(K >= N){
-        cout << 0 << endl;
-        return;
-    }
-    
+
     house.resize(N);
 
-    for(int i=0; i < N; i++){
+    for(ll i=0; i < N; i++){
         cin >> house[i].first >> house[i].second;
     }
 }
 
 void func(){
-    int result = 1e9;
+    if(K >= N){
+        cout << 0 << endl;
+        return;
+    }
+    
+    ll result = 1e9;
 
-    vector<int> perm(N, 0);
+    vector<ll> perm(N, 0);
     for(int i=N-K; i < N; i++){
         perm[i] = 1;
     }
 
     do{
-        int mx = 0;
+        ll mx = 0;
         for(int i=0; i < N; i++){
-            int mn = 1e9;
+            ll mn = 1e9;
 
-            for(int j=0; j < N; j++){
+            for(ll j=0; j < N; j++){
                 if(perm[j]){
                     mn = min(mn, dist(house[i], house[j]));
                 }
