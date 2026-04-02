@@ -1,18 +1,15 @@
-#include <string>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
 vector<int> solution(int brown, int yellow) {
     int total = brown + yellow;
     
-    for(int i=3; i < total; i++){
-        for(int j=3; j <= i; j++){
-            if(i*j == total){
-                if((i-2)*(j-2) == yellow){
-                    return {i, j};
-                }
-            }
-        }
+    for(int h=3; h <= sqrt(total); h++){
+        if(total % h != 0) continue;
+        
+        int w = total / h;
+        if((w-2)*(h-2) == yellow) return {w, h};
     }
 }
