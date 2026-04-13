@@ -19,7 +19,7 @@ void input(){
 
 void func(){
     pair<int, int> result;
-    int sum = 1e9;
+    int sum = 2e9;
     int i=0, j=N-1;
 
     while(i < j){
